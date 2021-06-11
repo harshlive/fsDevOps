@@ -223,14 +223,14 @@ public class RG_CalendarCtrl {
         request.setTimeout(60000);
         system.debug(acc.ShippingGeo__Latitude__s+','+acc.ShippingGeo__Longitude__s);
         Boolean inContainmentZone = false;
-        /*if(acc.ShippingGeo__Latitude__s!=null && acc.ShippingGeo__Longitude__s!= null) {
+        if(acc.ShippingGeo__Latitude__s!=null && acc.ShippingGeo__Longitude__s!= null) {
             request.setBody(' {"key": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtYWlsSWRlbnRpdHkiOiJ2aWpheS5ndXB0YUBhZXRoZXJldXMuY29tIn0.0cqA-dsMKkO282VTbN9UI3KIeLOiv2liXFc_5UBGM30","latlngs": [['+acc.ShippingGeo__Latitude__s+','+acc.ShippingGeo__Longitude__s+']]}');
             //eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtYWlsSWRlbnRpdHkiOiJ2aWpheS5ndXB0YUBhZXRoZXJldXMuY29tIn0.0cqA-dsMKkO282VTbN9UI3KIeLOiv2liXFc_5UBGM30
             HttpResponse response = http.send(request);
             system.debug(response.getBody());
             geoIQResp respObj = (geoIQResp)JSON.deserialize(response.getBody(), geoIQResp.class);
             inContainmentZone =respObj.Data[0].inContainmentZone;
-        }*/
+        }
         insert newEvent;
         visitWrapper vwr = new visitWrapper(newEvent,inContainmentZone);
         return vwr;

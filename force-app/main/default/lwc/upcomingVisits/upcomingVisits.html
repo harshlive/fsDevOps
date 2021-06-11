@@ -1,23 +1,42 @@
+<!--
+  @File Name          : upcomingVisits.html
+  @Description        : 
+  @Author             : ChangeMeIn@UserSettingsUnder.SFDoc
+  @Group              : 
+  @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+  @Last Modified On   : 6/4/2020, 3:04:30 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    6/4/2020   ChangeMeIn@UserSettingsUnder.SFDoc     Initial Version
+-->
 <template>
-    <div style="background-color: #EFF0F1;">
-        <center>
-    <div class="slds-text-heading_large slds-p-top_small">Today's Visits</div></center>
-    <template if:true={tomorrowVisits}>
+    <div style="background-color: white;">
+        <div class="slds-p-around_small">
+           <div class="slds-text-heading_large slds-p-top_small slds-box slds-m-bottom_small slds-theme_shade" style="border: 1px solid gray;" >
+                    <div class="slds-grid ">
+                        <div class="slds-col">
+                            <lightning-icon icon-name="custom:custom14" class="slds-m-right_small"></lightning-icon>  </div>
+                        <div class="slds-col slds-size_12-of-12">
+                                Today's Visits
+                        </div>
+                      </div>
+                    </div>
+    <template if:true={todayVisits}>
     <template if:true={todayVisits.length}>
-    <lightning-layout multiple-rows="true"  class=" slds-size_1-of-1 slds-medium-size--1-of-1 "  >
+    <lightning-layout multiple-rows="true"  class=" slds-size_1-of-1 slds-medium-size--1-of-1 slds-box slds-m-bottom_medium"  >
         <template for:each={todayVisits} for:item="visit" >
         <lightning-layout-item key={visit.Id}  class="slds-col slds-size_1-of-1 slds-medium-size--1-of-1 slds-large-size--4-of-12 slds-p-around_small" >                        
             <lightning-card title={visit.Name} icon-name="utility:company"  class="bear-tile" id={visit.Id} onclick={onTileClick}>
-        <div class="slds-p-horizontal_small">
-        <div class="slds-media">
-        <div class="slds-media__body">      
-            <p class="slds-m-bottom_-small"><lightning-icon icon-name="utility:clock" size="small" class="slds-p-right_small" ></lightning-icon>
-                <lightning-formatted-date-time value={visit.Planned_Start__c} hour="numeric"></lightning-formatted-date-time></p> 
-                <div class="slds-grid slds-gutters">
-                    <div class="slds-col">
-            <p class="slds-m-bottom_-small" >
-                <lightning-icon icon-name="utility:checkin" size="small" class="slds-p-right_small"></lightning-icon>
-                        <template if:true={visit.Account__r}>
+        <div class="slds-p-horizontal_small" id={visit.Id}>
+        <div class="slds-media" id={visit.Id}>
+        <div class="slds-media__body" id={visit.Id}>      
+            <p class="slds-m-bottom_-small" id={visit.Id}><lightning-icon icon-name="utility:clock" size="small" class="slds-p-right_small" id={visit.Id}></lightning-icon>
+                <lightning-formatted-date-time value={visit.Planned_Start__c} hour="numeric" id={visit.Id}></lightning-formatted-date-time></p> 
+                <div class="slds-grid slds-gutters" id={visit.Id}>
+                    <div class="slds-col" id={visit.Id}>
+            <p class="slds-m-bottom_-small" id={visit.Id}>
+                <lightning-icon icon-name="utility:checkin" size="small" class="slds-p-right_small" id={visit.Id}></lightning-icon>
+                         <template if:true={visit.Account__r}>
                         {visit.Account__r.ShippingStreet},
                         {visit.Account__r.ShippingCity},
                         {visit.Account__r.ShippingState}, {visit.Account__r.ShippingCountry} - {visit.Account__r.ShippingPostalCode}
@@ -28,8 +47,8 @@
                     </template>
             </p>
         </div>
-        <div class="slds-col">
-                <p class="slds-m-bottom_-small slds-m-top_-small" style="float: right;"><lightning-badge label={visit.Status__c} ></lightning-badge></p>
+        <div class="slds-col" id={visit.Id}>
+                <p class="slds-m-bottom_-small slds-m-top_-small" style="float: right;" id={visit.Id}><lightning-badge label={visit.Status__c} id={visit.Id} ></lightning-badge></p>
             </div>
             </div>
         </div>
@@ -45,24 +64,31 @@
         <div class="slds-p-around_large">
         <center>No Visits for Today</center></div>
     </template></template>
-    <center>
-    <div class="slds-text-heading_large slds-p-top_small">Tomorrow's Visits</div></center>
+    <div class="slds-text-heading_large slds-p-top_small slds-box slds-m-bottom_small slds-theme_shade" style="border: 1px solid gray;">
+        <div class="slds-grid ">
+            <div class="slds-col">
+                <lightning-icon icon-name="custom:custom14" class="slds-m-right_small"></lightning-icon>  </div>
+            <div class="slds-col slds-size_12-of-12">
+                Tomorrow's Visits
+            </div>
+          </div> 
+        </div>
     <template if:true={tomorrowVisits}>
     <template if:true={tomorrowVisits.length}>
-    <lightning-layout multiple-rows="true"  class=" slds-size_1-of-1 slds-medium-size--1-of-1 "  >
+    <lightning-layout multiple-rows="true"  class=" slds-size_1-of-1 slds-medium-size--1-of-1 slds-box"  >
         <template for:each={tomorrowVisits} for:item="visit">
         <lightning-layout-item key={visit.id}  class="slds-col slds-size_1-of-1 slds-medium-size--1-of-1 slds-large-size--4-of-12 slds-p-around_small" >                        
-        <lightning-card title={visit.Name} icon-name="utility:company"  class="bear-tile" >
-        <div class="slds-p-horizontal_small">
-        <div class="slds-media">
-        <div class="slds-media__body">      
-            <p class="slds-m-bottom_-small"><lightning-icon icon-name="utility:clock" size="small" class="slds-p-right_small" ></lightning-icon>
-                <lightning-formatted-date-time value={visit.Planned_Start__c} hour="numeric"></lightning-formatted-date-time></p> 
-                <div class="slds-grid slds-gutters">
-                    <div class="slds-col">
-            <p class="slds-m-bottom_-small" >
-                <lightning-icon icon-name="utility:checkin" size="small" class="slds-p-right_small"></lightning-icon>
-                       <template if:true={visit.Account__r}>
+        <lightning-card title={visit.Name} icon-name="utility:company"  class="bear-tile" id={visit.Id} onclick={onTileClick}>
+        <div class="slds-p-horizontal_small" id={visit.Id}>
+        <div class="slds-media" id={visit.Id}>
+        <div class="slds-media__body" id={visit.Id}>      
+            <p class="slds-m-bottom_-small" id={visit.Id}><lightning-icon icon-name="utility:clock" size="small" class="slds-p-right_small" id={visit.Id} ></lightning-icon>
+                <lightning-formatted-date-time value={visit.Planned_Start__c} hour="numeric" id={visit.Id}></lightning-formatted-date-time></p> 
+                <div class="slds-grid slds-gutters" id={visit.Id}>
+                    <div class="slds-col" id={visit.Id}>
+            <p class="slds-m-bottom_-small" id={visit.Id} >
+                <lightning-icon icon-name="utility:checkin" size="small" class="slds-p-right_small" id={visit.Id}></lightning-icon>
+                        <template if:true={visit.Account__r}>
                         {visit.Account__r.ShippingStreet},
                         {visit.Account__r.ShippingCity},
                         {visit.Account__r.ShippingState}, {visit.Account__r.ShippingCountry} - {visit.Account__r.ShippingPostalCode}
@@ -72,8 +98,8 @@
                         {visit.Lead__r.Company},
                     </template>
             </p></div>
-            <div class="slds-col">
-                <p class="slds-m-bottom_-small slds-m-top_-small" style="float: right;"><lightning-badge label={visit.Status__c} ></lightning-badge></p>
+            <div class="slds-col" id={visit.Id}>
+                <p class="slds-m-bottom_-small slds-m-top_-small" style="float: right;" id={visit.Id}><lightning-badge label={visit.Status__c} id={visit.Id}></lightning-badge></p>
             </div>
             </div>
         </div>
@@ -89,5 +115,6 @@
                 <center>No Visits for Tomorrow</center>
             </div>
         </template></template>
+        </div>
 </div>
 </template>

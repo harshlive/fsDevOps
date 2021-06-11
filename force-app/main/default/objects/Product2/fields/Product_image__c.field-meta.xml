@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Product_image__c</fullName>
+    <externalId>false</externalId>
+    <formula>if(len( Picture_Id__c)&gt;0,IMAGE(&quot;/servlet/servlet.FileDownload?file=&quot; &amp; Picture_Id__c , &quot;&quot;), &quot;None Loaded&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Product image</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

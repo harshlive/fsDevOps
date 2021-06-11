@@ -4,19 +4,4 @@
     <availableInTouch>true</availableInTouch>
     <confirmationTokenRequired>false</confirmationTokenRequired>
     <label>CreateOrders</label>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>19</minorNumber>
-        <namespace>sf_chttr_apps</namespace>
-    </packageVersions>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>7</minorNumber>
-        <namespace>sf_com_apps</namespace>
-    </packageVersions>
-    <packageVersions>
-        <majorNumber>2</majorNumber>
-        <minorNumber>30</minorNumber>
-        <namespace>tgen</namespace>
-    </packageVersions>
 </ApexPage>

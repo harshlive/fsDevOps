@@ -19,6 +19,8 @@ export default class UpcomingVisits extends LightningElement {
     onTileClick(event) {
         console.log(event.target.id.split('-')[0]);
         let id = event.target.id.split('-')[0];
+        if(id!=null && id!=undefined && id!='') {
         window.location.href = '/'+id;
+        }
     }
 }

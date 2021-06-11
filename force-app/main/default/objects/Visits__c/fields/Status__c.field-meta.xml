@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(AND(Checked_In__c == false, Checked_Out__c == false),&apos;Not Started&apos;, IF(AND(Checked_In__c == true, Checked_Out__c == false),&apos;In-Progress&apos;,IF(AND(Checked_In__c == true, Checked_Out__c == true),&apos;Completed&apos;,&apos;&apos;)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

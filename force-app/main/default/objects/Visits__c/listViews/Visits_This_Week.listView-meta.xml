@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Visits_This_Week</fullName>
+    <columns>NAME</columns>
+    <columns>Planned_Start__c</columns>
+    <columns>Status__c</columns>
+    <columns>Lead__c</columns>
+    <columns>Account__c</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>Planned_Start__c</field>
+        <operation>equals</operation>
+        <value>THIS_WEEK</value>
+    </filters>
+    <label>Visits This Week</label>
+</ListView>
