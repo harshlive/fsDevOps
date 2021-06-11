@@ -1,0 +1,45 @@
+<aura:component controller="ShowNearbyLocationChild" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+  <!--  <aura:attribute name="lead" type="Lead"/>	-->
+   <aura:attribute name="options" type="List" default="[
+    {'label': 'Malls', 'value': 'option1'},
+    {'label': 'Restaurant', 'value': 'option2'}
+    ]"/> 
+    <aura:attribute name="radiovalue" type="String" default="option1"/>
+     <!-- <ui:inputRadio aura:id="r2" name="others" label="Test3" change="{!c.onGroup}" />
+               <ui:inputRadio aura:id="r3" name="others" label="Test4" change="{!c.onGroup}" />-->
+  <!-- <input type="text" class="form-control" onchange="{!c.searchKeyChange}"
+            placeholder="Search"/>-->
+    <lightning:radioGroup name="radioGroup"
+                          label="Radio Group"
+                          options="{! v.options }"
+                          value="{! v.radiovalue }"
+                          type="radio"
+                          onchange="{! c.handleChange }"
+                           class="customRadioCls"/>
+          
+             <lightning:button variant="brand" label="Creat Lead" title="Base action" onclick="{! c.handleCreatLead }"/>
+
+    
+  <aura:attribute name="StoreValue" type="String"/>
+      <aura:attribute name="mapMarkers" type="Object"/>
+    <aura:attribute name="center" type="Object" />
+    <aura:attribute name="zoomLevel" type="Integer" />
+    <aura:attribute name="markersTitle" type="String" />
+    <aura:attribute name="showFooter" type="Boolean" />
+     <aura:attribute name="selectedMarkerValue" type="Object" default="SF1" />
+    <aura:attribute name="StoreJsonVal1"  type="Object"/>
+     <aura:attribute name="StoreJsonVal2"  type="Object"/>
+    <!-- handlers-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+
+    <!-- the map component -->
+    <lightning:map
+        mapMarkers="{! v.mapMarkers }"
+        center="{! v.center }"
+        zoomLevel="{! v.zoomLevel }"
+        markersTitle="{! v.markersTitle }"
+        showFooter="{ !v.showFooter }" 
+        onmarkerselect="{!c.handleMarkerSelect}"
+        selectedMarkerValue="{!v.selectedMarkerValue}">
+    </lightning:map>
+</aura:component>

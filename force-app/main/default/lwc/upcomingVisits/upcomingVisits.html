@@ -1,0 +1,93 @@
+<template>
+    <div style="background-color: #EFF0F1;">
+        <center>
+    <div class="slds-text-heading_large slds-p-top_small">Today's Visits</div></center>
+    <template if:true={tomorrowVisits}>
+    <template if:true={todayVisits.length}>
+    <lightning-layout multiple-rows="true"  class=" slds-size_1-of-1 slds-medium-size--1-of-1 "  >
+        <template for:each={todayVisits} for:item="visit" >
+        <lightning-layout-item key={visit.Id}  class="slds-col slds-size_1-of-1 slds-medium-size--1-of-1 slds-large-size--4-of-12 slds-p-around_small" >                        
+            <lightning-card title={visit.Name} icon-name="utility:company"  class="bear-tile" id={visit.Id} onclick={onTileClick}>
+        <div class="slds-p-horizontal_small">
+        <div class="slds-media">
+        <div class="slds-media__body">      
+            <p class="slds-m-bottom_-small"><lightning-icon icon-name="utility:clock" size="small" class="slds-p-right_small" ></lightning-icon>
+                <lightning-formatted-date-time value={visit.Planned_Start__c} hour="numeric"></lightning-formatted-date-time></p> 
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col">
+            <p class="slds-m-bottom_-small" >
+                <lightning-icon icon-name="utility:checkin" size="small" class="slds-p-right_small"></lightning-icon>
+                        <template if:true={visit.Account__r}>
+                        {visit.Account__r.ShippingStreet},
+                        {visit.Account__r.ShippingCity},
+                        {visit.Account__r.ShippingState}, {visit.Account__r.ShippingCountry} - {visit.Account__r.ShippingPostalCode}
+                    </template>
+                    <template if:true={visit.Lead__r}>
+                        {visit.Lead__r.Name},
+                        {visit.Lead__r.Company},
+                    </template>
+            </p>
+        </div>
+        <div class="slds-col">
+                <p class="slds-m-bottom_-small slds-m-top_-small" style="float: right;"><lightning-badge label={visit.Status__c} ></lightning-badge></p>
+            </div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </lightning-card>
+        </lightning-layout-item>
+        </template>
+        </lightning-layout>
+    </template></template>
+    <template if:true={todayVisits}>
+    <template if:false={todayVisits.length}>
+        <div class="slds-p-around_large">
+        <center>No Visits for Today</center></div>
+    </template></template>
+    <center>
+    <div class="slds-text-heading_large slds-p-top_small">Tomorrow's Visits</div></center>
+    <template if:true={tomorrowVisits}>
+    <template if:true={tomorrowVisits.length}>
+    <lightning-layout multiple-rows="true"  class=" slds-size_1-of-1 slds-medium-size--1-of-1 "  >
+        <template for:each={tomorrowVisits} for:item="visit">
+        <lightning-layout-item key={visit.id}  class="slds-col slds-size_1-of-1 slds-medium-size--1-of-1 slds-large-size--4-of-12 slds-p-around_small" >                        
+        <lightning-card title={visit.Name} icon-name="utility:company"  class="bear-tile" >
+        <div class="slds-p-horizontal_small">
+        <div class="slds-media">
+        <div class="slds-media__body">      
+            <p class="slds-m-bottom_-small"><lightning-icon icon-name="utility:clock" size="small" class="slds-p-right_small" ></lightning-icon>
+                <lightning-formatted-date-time value={visit.Planned_Start__c} hour="numeric"></lightning-formatted-date-time></p> 
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col">
+            <p class="slds-m-bottom_-small" >
+                <lightning-icon icon-name="utility:checkin" size="small" class="slds-p-right_small"></lightning-icon>
+                       <template if:true={visit.Account__r}>
+                        {visit.Account__r.ShippingStreet},
+                        {visit.Account__r.ShippingCity},
+                        {visit.Account__r.ShippingState}, {visit.Account__r.ShippingCountry} - {visit.Account__r.ShippingPostalCode}
+                    </template>
+                    <template if:true={visit.Lead__r}>
+                        {visit.Lead__r.Name},
+                        {visit.Lead__r.Company},
+                    </template>
+            </p></div>
+            <div class="slds-col">
+                <p class="slds-m-bottom_-small slds-m-top_-small" style="float: right;"><lightning-badge label={visit.Status__c} ></lightning-badge></p>
+            </div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </lightning-card>
+        </lightning-layout-item>
+        </template>
+        </lightning-layout></template></template>
+        <template if:true={tomorrowVisits}>
+        <template if:false={tomorrowVisits.length}>
+            <div class="slds-p-around_large">
+                <center>No Visits for Tomorrow</center>
+            </div>
+        </template></template>
+</div>
+</template>

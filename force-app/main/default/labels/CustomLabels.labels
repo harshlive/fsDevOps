@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>CompareDistValue</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CompareDistValue</shortDescription>
+        <value>0.020</value>
+    </labels>
+    <labels>
+        <fullName>PrimitiveDataType</fullName>
+        <categories>TestClassGenerator</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>PrimitiveDataType</shortDescription>
+        <value>Blob, Boolean, Date, Datetime, Decimal, Double, ID, Integer, Long, String, Time</value>
+    </labels>
+</CustomLabels>

@@ -1,0 +1,457 @@
+<aura:component controller="RG_CalendarCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <ltng:require scripts="/resource/RG_CalendarAssets/RG_CalendarAssets/scripts/jquery.min.js,
+                           /resource/RG_CalendarAssets/RG_CalendarAssets/scripts/moment.min.js,
+                           /resource/moments_timezones,
+                           /resource/leaflet/leaflet.js,
+                           /resource/RG_CalendarAssets/RG_CalendarAssets/scripts/jquery-ui.custom.min.js,
+                           /resource/RG_CalendarAssets/RG_CalendarAssets/scripts/fullcalendar.min.js"
+                  styles="/resource/RG_CalendarAssets/RG_CalendarAssets/scripts/fullcalendar.css,
+                          /resource/leaflet/leaflet.css"
+                  afterScriptsLoaded="{!c.doInit}" />
+    <!--<aura:handler name="componentEventFired" event="c:handleCalenderComponent" action="{!c.handleEvent}"/>-->
+    <aura:attribute name="searchAccountText" type="String" default="0"/>
+    <aura:attribute name="selectedMonth" type="Integer" default=""/>
+    <aura:attribute name="selectCustomlead" type="String[]"   default="['Customer','Lead']"/>
+    <aura:attribute name="selectCL" type="String" />
+    <!--<aura:attribute name="searchLeadText" type="String" default=""/>-->
+    <aura:attribute name="allAccounts" type="Object[]"/>
+    <aura:attribute name="allLeads" type="Lead[]"/>
+    <aura:attribute name="event" type="Visits__c"/>
+    <aura:attribute name="events" type="Visits__c[]"/>
+    <aura:handler name="change" value="{!v.events}" action="{!c.eventsChange}"/>
+    <!-- Event Style Attributes -->
+    <aura:attribute name="calendarColor" type="String" default="#ffffff"/>
+    <aura:attribute name="theme" type="String" default="slds-theme--shade"/>
+    <aura:attribute name="textColor" type="String" default="#000000"/>
+    <aura:attribute name="eventBackgroundColor" type="String"/>
+    <aura:attribute name="eventBorderColor" type="String"/>
+    <aura:handler name="change" value="{!v.searchAccountText}" action="{!c.onChangeAccountSearch}"/>
+    
+    <!--<aura:handler name="change" value="{!v.searchLeadText}" action="{!c.onChangeLeadSearch}"/>-->
+    <aura:attribute name="selectedView" type="String" default="Calendar View"/>
+    <aura:attribute name="gradeOptions" type="List" />
+    <aura:attribute name="selectedGrade" type="String" default=""/>
+    <aura:attribute name="ShowAccountrelatedData" type="Boolean" default="True"/>
+    
+    <aura:attribute name="showAccount" type="boolean" default="true"/>
+    <aura:attribute name="hideGrade" type="boolean" default="true"/>
+    <aura:attribute name="selectOptions" type="List" />
+    <aura:attribute name="selectedObj" type="String" default=""/>
+    
+    <aura:attribute name="userOptions" type="List" />
+    <aura:attribute name="selectedUser" type="String" default=""/>
+    <aura:attribute name="draggedEventId" type="String" />
+    <aura:attribute name="draggedEventAccountName" type="String"/>
+    <aura:attribute name="surveys" type="RESurvey__c[]"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="true"/>
+    <aura:attribute name="isAlertModalOpen" type="Boolean" default="false"/>
+    
+    <aura:attribute name="userTimeZone" type="String"/>
+    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">                   
+                    <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+                    <aura:if isTrue="{!v.isAlertModalOpen}">
+                        <div class="slds-m-around_xx-large">
+                            <!-- Modal/Popup Box starts here-->
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <!-- Modal/Popup Box Header Starts here-->
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close"
+                                                              onclick="{! c.closeModel }"
+                                                              alternativeText="close"
+                                                              variant="bare-inverse"
+                                                              class="slds-modal__close"/>
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Alert</h2>
+                                    </header>
+                                    <!--Modal/Popup Box Body Starts here-->
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                        <p><b>Alert : The visit is located in a <span style='color:red'>COVID Containment Zone</span>. Please take necessary precautions in the visit.
+                                            </b>
+                                        </p>
+                                    </div>
+                                    <!--Modal/Popup Box Footer Starts here-->
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="brand"
+                                                          label="OK"
+                                                          title="OK"
+                                                          onclick="{!c.closeModel}"/>
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </div>
+                    </aura:if>
+    </div>
+    <div class="slds-card" style="text-align:center;width:100%;">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner alternativeText="Loading" size="large" />
+        </aura:if>
+        <div class="slds-page-header" style="padding:0px">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <lightning:icon iconName="action:log_event"  size="large"  />
+                                        <span class="slds-page-header__title slds-truncate" title="VISIT PLANNER">VISIT PLANNER</span>
+                                    </h1>
+                                </div>
+                            </div>
+                            <p class="slds-page-header__name-meta">Plan • Schedule • Succeed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-align_absolute-center" style="height:5rem">
+            
+            <td style="text-align:left;width:20%">
+                
+                <lightning:select name="obj" label="Select Prospect Type"  onchange="{!c.onChangeObj}" aura:id="distance">
+                    <option value="1">Customer</option>
+                    <option value="2">Lead</option>
+                </lightning:select>
+            </td>
+            
+        </div>
+        <td style="width:20%">
+        </td>
+        <aura:if isTrue="{!v.showAccount}">
+            <div class="slds-p-top_small">
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <div class="slds-radio_button-group">
+                            <span class="slds-button slds-radio_button" onclick="{!c.onChangeView}" id="calBtn">
+                                <input type="radio" name="radio" id="calendarView" value="calendarView" checked="true"/>
+                                <label class="slds-radio_button__label" for="calendarView">
+                                    <span class="slds-radio_faux">Calendar View</span>
+                                </label>
+                            </span>
+                            <span class="slds-button slds-radio_button" onclick="{!c.onChangeView}" id="mapBtn">
+                                <input type="radio" name="radio" id="mapView" value="mapView" />
+                                <label class="slds-radio_button__label" for="mapView">
+                                    <span class="slds-radio_faux">Map View</span>
+                                </label>
+                            </span>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div style="width:100%;height:100px;">
+                <table style="width:100%;height:100px;">
+                    <tr style="width:100%;height:100px;">
+                        <td style="width:5%">
+                        </td>
+                        <td style="text-align:center;width:20%;">
+                            <lightning:select name="select" label="Representative" value="{!v.selectedUser}" onchange="{!c.onChangeRepresentative}">
+                                <aura:iteration items="{!v.userOptions}" var="user">
+                                    <option text="{!user.FirstName+' '+user.LastName}" value="{!user.Id}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </td>
+                        <td style="width:50%">
+                        </td>
+                        <td style="width:20%">
+                            <lightning:select name="obj" label="Select Month"  onchange="{!c.changeMonth}" value="{!v.selectedMonth}">
+                                <option value="0">January</option>
+                                <option value="1">February</option>
+                                <option value="2">March</option>
+                                <option value="3">April</option>
+                                <option value="4">May</option>
+                                <option value="5">June</option>
+                                <option value="6">July</option>
+                                <option value="7">August</option>
+                                <option value="8">September</option>
+                                <option value="9">October</option>
+                                <option value="10">November</option>
+                                <option value="11">December</option>
+                            </lightning:select>
+                        </td>
+                        <td style="width:5%">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="slds-grid">
+                <div class="slds-col">
+                    <div style="width:100%;padding-left:50px;padding-right:50px">
+                        <aura:if isTrue="{!v.selectedView == 'Calendar View'}">
+                            <div style="width:30%;float:left;">
+                                <div class="slds-page-header" style="margin-bottom:3px;border: 1px solid gray;">
+                                    <div class="slds-page-header__row">
+                                        <div class="slds-page-header__col-title">
+                                            <div class="slds-media">
+                                                <div class="slds-media__body">
+                                                    <div class="slds-page-header__name">
+                                                        <div class="slds-page-header__name-title">
+                                                            <h2>
+                                                                <span class="slds-page-header__title slds-truncate" title="SELECT VISITS">SELECT VISITS</span>
+                                                            </h2>
+                                                        </div>
+                                                    </div>
+                                                    <p class="slds-page-header__name-meta" style="margin-bottom:10px;">Drag and Drop to schedule Visits</p>
+                                                    <aura:if isTrue="{!v.hideGrade}">
+                                                        <div >
+                                                            <lightning:select value="{!v.selectedGrade}" name="select" label="Grade" onchange="{!c.onChangeGrade}">
+                                                                <aura:iteration items="{!v.gradeOptions}" var="gradeOption">
+                                                                    <option text="{!gradeOption.label}" value="{!gradeOption.value}"/>
+                                                                </aura:iteration>
+                                                            </lightning:select>
+                                                        </div></aura:if>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id='external-events'>
+                                    <ui:inputText label="Search" class="field width_hundredperc" value="{!v.searchAccountText}" updateOn="change"/>
+                                    <!-- <aura:if isTrue="{!v.showAccount}" >-->
+                                    <aura:iteration items="{!v.allAccounts}" var="account">
+                                        <div style="width:60%;float:left;">
+                                            <div class='fc-event' data-accountName="{!account.Name}" id="{!account.Id}" onmouseover="{!c.onHoverExternalEvent}">
+                                                <p style="margin:0;font-weight:bold;font-size:14px;color:white;padding:5px">{!account.Name}</p>
+                                                {!account.ShippingStreet+' ,'+account.ShippingCity+' ,'+' ,'+account.ShippingCountry+' ,'+account.ShippingPostalCode}
+                                            </div>
+                                        </div>
+                                        <div style="width:30%;float:right;padding-top:2em;cursor:pointer">
+                                            
+                                            <a href="javascript:void(0)" aria-describedby="View Details" style="cursor:pointer" id="{!account.Id}" onmouseover="{!c.display}" onmouseout="{!c.displayOut}">View Details</a>
+                                            
+                                            <div class="slds-popover slds-popover_tooltip slds-nubbin_top-left toggle" role="tooltip" id="{!'tooltip' + account.Id}" style="position:relative;width:250px;margin-top: 5px;" aura:id="tooltip">
+                                                <div class="slds-popover__body">
+                                                    <!-- <p style='color:white;margin: auto;font-size:1.2em;padding-bottom:3px'>{!account.Name}</p>-->
+                                                    <p style='color:white;margin: auto;'>No. Of Visits : {!account.VisitCount}</p>
+                                                    <p style='color:white;margin: auto;'>Last Visit Date : {!account.LastVisitDate}
+                                                        <!--  <aura:if isTrue="{!account.NextVisitDate != 'NA'}">
+                                                           <lightning:formattedDateTime value="{!account.LastVisitDate}" year="2-digit" month="short" day="2-digit" hour="numeric"
+                                                                                         weekday="long" era="short"/>
+                                                            <aura:set attribute="else">
+                                                                NA
+                                                            </aura:set>
+                                                        </aura:if>-->
+                                                    </p>
+                                                    <p style='color:white;margin: auto;'>Next Visit Date : {!account.NextVisitDate}
+                                                        <!--    <aura:if isTrue="{!account.NextVisitDate != 'NA'}">
+                                                            <lightning:formattedDateTime value="{!account.NextVisitDate}" year="2-digit" month="short" day="2-digit" hour="numeric"
+                                                                                         weekday="long" era="short"/>
+                                                            <aura:set attribute="else">
+                                                                NA
+                                                            </aura:set>
+                                                        </aura:if> -->
+                                                    </p>
+                                                    <p style='color:white;margin: auto;'>Assigned To : {!account.OwnerName}</p>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </aura:iteration>
+                                </div> 
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.selectedView == 'Map View'}">
+                            <div style="width:60%;float:left;">
+                             
+                                <div id="mapViewContainer" style="width:100%;height:440px;"></div> 
+                            </div>
+                        </aura:if>
+                        <div style="{!v.selectedView == 'Calendar View' ? 'width:70%;float:right;' : 'width:40%;float:right;'}">
+                            <div class="slds-card" style="{!'background-color:' + v.calendarColor + ';'}">
+                                 
+                                   <div class="slds-page-header slds-m-left_large slds-m-bottom_small" style="padding:2px;border: 1px solid gray;">
+                                    <div class="slds-page-header__row">
+                                        <div class="slds-page-header__col-title">
+                                            <div class="slds-media" style="float:left">
+                                                <div class="slds-media__body">
+                                                    <div class="slds-page-header__name">
+                                                        <div class="slds-page-header__name-title" style="padding-left:10px;padding-top:5px;padding-bottom:5px">
+                                                            <h2>
+                                                                <span class="slds-page-header__title slds-truncate" style="text-align:left;" title="COLOR LEGENDS">
+                                                                    <lightning:icon iconName="action:manage_perm_sets"  size="x-small"  /><span style="padding-left:10px">COLOR LEGENDS</span>
+                                                                  </span>
+                                                            </h2>
+                                                        </div>
+                                                    </div>
+                                                    <!--<p class="slds-page-header__name-meta">Plan • Schedule • Succeed</p>-->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div class="slds-page-header slds-m-left_large slds-m-bottom_small slds-m-top_small" style="padding:2px;border: 1px solid gray;">
+                                    <div class="slds-page-header__row">
+                                        <div class="slds-page-header__col-title">
+                                            <div class="slds-media" >
+                                                <div class="slds-media__body">
+                                                    <div class="slds-page-header__name">
+                                                        <div class="slds-page-header__name-title" style="padding-left:10px;padding-top:5px;padding-bottom:5px">
+                                                            <div class="slds-grid slds-gutters">
+                                                                <div class="slds-col">
+                                                                    <span> 
+                                                                        <div style="background-color: #cfc ; padding: 5px; border: 1px solid green;border-radius:5px">
+                                                                        Visit Completed </div></span>
+                                                                </div>
+                                                                <div class="slds-col">
+                                                                    <span><div style="background-color: #3a87ad ; padding: 5px; border: 1px solid #3a87ad;color:white;border-radius:5px;">
+                                                                        Visit Planned </div></span>
+                                                                </div>
+                                                                <div class="slds-col">
+                                                                    <span><div style="background-color: red ; padding: 5px; border: 1px solid #3a87ad;color:white;border-radius:5px;">
+                                                                        Visit Overdue </div></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                </div>
+                                
+                                <div id="calendar" style="width:95%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div aura:id="viewModal" id="viewModal" class="slds-modal" aria-hidden="false" role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header">
+                                <c:RG_btn class="slds-button slds-button--icon-inverse slds-modal__close"
+                                          svgClass="slds-button__icon slds-button__icon--large"
+                                          svgXlinkHref="/resource/RG_CalendarAssets/RG_CalendarAssets/assets/icons/action-sprite/svg/symbols.svg#close"
+                                          data="viewModal"
+                                          onclick="{!c.closeViewModal}"/>
+                                <h2 class="slds-text-heading--medium">New Event</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <div>
+                                    <form class="slds-form--compound">
+                                        <div class="slds-form-element__row">
+                                            <label class="slds-form-element__control slds-size--1-of-1">
+                                                <span class="slds-form-element__label">Name</span>
+                                                <input id="newTitle" class="slds-input" type="text" />
+                                            </label>
+                                        </div>
+                                        <div class="slds-form-element__row">
+                                            <label class="slds-form-element__control slds-size--1-of-2">
+                                                <span class="slds-form-element__label">Planned Start Date</span>
+                                                <input id="newStartDate" class="slds-input" type="date" />
+                                            </label>
+                                            <label class="slds-form-element__control slds-size--1-of-2">
+                                                <span class="slds-form-element__label">Planned End Date</span>
+                                                <input id="newEndDate" class="slds-input" type="date" />
+                                            </label>
+                                        </div>
+                                        <div class="slds-form-element__row">
+                                            <label class="slds-form-element__control slds-size--1-of-2">
+                                                <span class="slds-form-element__label">Planned Start Time</span>
+                                                <input id="newStartTime" class="slds-input" type="time" />
+                                            </label>
+                                            <label class="slds-form-element__control slds-size--1-of-2">
+                                                <span class="slds-form-element__label">Planned End Time</span>
+                                                <input id="newEndTime" class="slds-input" type="time" />
+                                            </label>
+                                        </div>
+                                        <h2 class="slds-text-heading--medium">Surveys</h2>
+                                        <aura:iteration items="{!v.surveys}" var="survey">
+                                            <div class="slds-form-element__row">
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__control">
+                                                        <span class="slds-checkbox">
+                                                            <input class="survey-new-checkbox" type="checkbox" name="options" id="{!'New~'+survey.Id}" value="{!'New~'+survey.Id}" />
+                                                            <label class="slds-checkbox__label" for="{!'New~'+survey.Id}">
+                                                                <span class="slds-checkbox_faux"></span>
+                                                                <span class="slds-form-element__label">{!survey.Name}</span>
+                                                            </label>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </aura:iteration>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <button class="slds-button slds-button--neutral" data-data="viewModal" onclick="{!c.closeViewModal}">Cancel</button>
+                                <button class="slds-button slds-button--neutral slds-button--brand" id="newEventButton" onclick="{!c.formatEvent}">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div aura:id="editModal" id="editModal" class="slds-modal" aria-hidden="false" role="dialog">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header">
+                                <c:RG_btn class="slds-button slds-button--icon-inverse slds-modal__close"
+                                          svgClass="slds-button__icon slds-button__icon--large"
+                                          svgXlinkHref="/resource/RG_CalendarAssets/RG_CalendarAssets/assets/icons/action-sprite/svg/symbols.svg#close"
+                                          data="viewModal"
+                                          onclick="{!c.closeEditModal}"/>
+                                <h2 class="slds-text-heading--medium">Visit</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <div>
+                                    <form class="slds-form--compound">
+                                        <div class="slds-form-element__row">
+                                            <label class="slds-form-element__control slds-size--1-of-1">
+                                                <span class="slds-form-element__label">Name</span>
+                                                <input id="editTitle" class="slds-input" type="text" />
+                                            </label>
+                                        </div>
+                                        <div class="slds-form-element__row">
+                                            <label class="slds-form-element__control slds-size--1-of-2">
+                                                <span class="slds-form-element__label">Planned Start Date</span>
+                                                <input id="editStartDate" class="slds-input" type="date" />
+                                            </label>
+                                            <label class="slds-form-element__control slds-size--1-of-2">
+                                                <span class="slds-form-element__label">Planned End Date</span>
+                                                <input id="editEndDate" class="slds-input" type="date" />
+                                            </label>
+                                        </div>
+                                        <div class="slds-form-element__row">
+                                            <label class="slds-form-element__control slds-size--1-of-2">
+                                                <span class="slds-form-element__label">Planned Start Time</span>
+                                                <input id="editStartTime" class="slds-input" type="time" />
+                                            </label>
+                                            <label class="slds-form-element__control slds-size--1-of-2">
+                                                <span class="slds-form-element__label">Planned End Time</span>
+                                                <input id="editEndTime" class="slds-input" type="time" />
+                                            </label>
+                                        </div>
+                                        <h2 class="slds-text-heading--medium">Surveys</h2>
+                                        <aura:iteration items="{!v.surveys}" var="survey">
+                                            <div class="slds-form-element__row">
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__control">
+                                                        <span class="slds-checkbox">
+                                                            <input class="survey-edit-checkbox" type="checkbox" name="options" id="{!survey.Id}" value="{!survey.Id}" />
+                                                            <label class="slds-checkbox__label" for="{!survey.Id}">
+                                                                <span class="slds-checkbox_faux"></span>
+                                                                <span class="slds-form-element__label">{!survey.Name}</span>
+                                                            </label>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </aura:iteration>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <button class="slds-button slds-button--neutral slds-theme--error" onclick="{!c.deleteOldEvent}" style="float:left;">Delete</button>
+                                <button class="slds-button slds-button--neutral" data-data="editModal" onclick="{!c.closeEditModal}">Cancel</button>
+                                <button id="editButton" class="slds-button slds-button--neutral slds-button--brand" data-id="" onclick="{!c.editEvent}">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div aura:id="backdrop" id="backdrop" class="slds-backdrop"></div>
+                </div>
+            </div>
+            
+            <aura:set attribute="else">
+                
+                <c:calender/>
+            </aura:set>
+        </aura:if>
+        
+    </div>
+    
+    
+</aura:component>

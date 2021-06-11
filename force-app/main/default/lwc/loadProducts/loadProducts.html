@@ -1,0 +1,168 @@
+<template>
+        <lightning-card title="Order Form" >
+            <div class="slds-p-around_small">
+       <!-- <div class="slds-card__body_inner slds-theme_shade" >-->
+        <!-- Start bear list -->
+        <template if:true={bears.data}>
+        
+                <lightning-input type="search"
+                oncommit={handleSearchTermChange}
+                variant="label-hidden"
+                name="SearchBar"
+                label="Search"
+                placeholder="Enter product name or product code"
+                value={searchTerm}>
+                </lightning-input>
+                
+                <lightning-combobox name="Pricebook Name" label="Pricebook"  value={defVal} 
+                onchange={handleSearchTermChange} options={statusOptions}>
+                </lightning-combobox>
+                <lightning-layout multiple-rows="true" pull-to-boundary="large" class="slds-col slds-size_1-of-1 slds-medium-size--1-of-1 " style="margin: 0;"  >
+                        <template for:each={bears.data} for:item="PricebookEntry">
+                        <lightning-layout-item key={PricebookEntry.Id}  class="slds-col slds-size_1-of-1 slds-medium-size--1-of-1 slds-large-size--4-of-12 slds-p-around_small" >
+                             <!-- Start bear tile -->
+                <!--<div class="slds-card slds-has-bottom-magnet">
+                        <div class="slds-p-around_medium">-->
+                                            
+                <lightning-card title={PricebookEntry.Product2.Name} icon-name="custom:custom11" class="bear-tile" >
+                     <!-- <lightning-icon icon-name="custom:custom11" title="custom11"></lightning-icon>-->
+                <div class="slds-p-horizontal_small">
+                <div class="slds-media">
+                    
+                <div class="slds-media__body">
+                        
+                              
+                    <p class="slds-m-bottom_xx-small" >PRODUCT CODE : {PricebookEntry.Product2.ProductCode}</p>
+                    <p class="slds-m-bottom_xx-small">UNIT PRICE : INR {PricebookEntry.UnitPrice} </p>
+                    
+                            <lightning-button-icon name={PricebookEntry.Id} icon-name="utility:add" value="DisplayTable" size="small" variant="bare" class="slds-float_right" onclick={Add} ></lightning-button-icon>
+                       
+                </div>
+                </div>
+                </div>
+                </lightning-card>
+                <!-- End bear tile -->
+                
+                
+                
+                
+                
+                </lightning-layout-item>
+                
+                </template>
+                </lightning-layout>
+                <template if:false={hasResults}>
+                <div class="slds-align_absolute-center slds-m-vertical_small">
+                This is beary disturbing, we did not find results...
+                </div>
+                </template>
+                </template>
+                <!-- End bear list -->
+                <!-- Data failed to load -->
+                <template if:true={bears.error}>
+                <div class="slds-text-color_error">
+                An error occurred while loading the product list
+                </div>
+                </template>
+                
+                <div  class="slds-p-around_small">
+                YOUR ORDERS</div>
+                <template if:false={tableList.length}>No Products Added</template>
+                <template if:true={tableList.length}><div>Added {tableList.length} products</div>
+                    <div style="overflow-x:scroll">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col">
+                                
+                                                    <div class="slds-truncate" title="Qty">Qty</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Products">Name</div>
+                
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Price">UnitPrice</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Discount">Discount</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate" title="Sales Price">Sales Price</div>
+                                                </th>
+                                             <th scope="col">
+                                                        <div class="slds-truncate" ></div>
+                                                    </th>
+                </tr>
+                                        </thead>
+                                        <tbody>
+                                                <template for:each={tableList} for:item="PricebookEntry">
+                                                    <tr key={PricebookEntry.Id}>
+                                                      <th scope="col">
+                                                                
+                                                                <div ><lightning-input value={PricebookEntry.Qty} name={PricebookEntry.Id} onblur={updateQty} class="inputMob" ></lightning-input></div>
+                                                            </th>
+                                                    <th scope="col"> 
+                                                                
+                                                                        <div class="slds-p-top_small">{PricebookEntry.Productc.Name}</div>
+                                                                    </th>
+                                                                    <th scope="col">
+                                                                
+                                                                        <div class="slds-p-top_small">{PricebookEntry.UnitPrice}</div>
+                                                                    </th>
+                                                                    <th scope="col">
+                                                                
+                                                                        <div><lightning-input value={PricebookEntry.Discount} name={PricebookEntry.Id} onblur={updateDisc}></lightning-input></div>
+                                                                    </th>
+                                                                    <th scope="col">
+                                                                
+                                                                        <div><lightning-input value={PricebookEntry.SP} name={PricebookEntry.Id} onblur={updateSP}></lightning-input></div>
+                                                                    </th>
+                                                                    <th>
+                                                                        
+                                                                            <lightning-button-icon icon-name="utility:close" variant="bare"  name={PricebookEntry.Id}  alternative-text="Click to Call" size="small" title="large size" onclick={removeRow}>
+                                                                                </lightning-button-icon>
+                                                                                                                           
+                                                                    </th>
+                                                                </tr>
+                                                            </template>
+                                                        </tbody>
+                                                    </table></div></template>
+                                                                  <div style="width:100%;margin-top:20px;padding:20px 20px 0px 20px;">
+                                                              <a class="slds-truncate" id="totalPriceAfterDiscount" style="font-size:22px;"></a>
+                                                          </div>
+                                  
+                                                       
+                       Total :- Rs.{multiplication}
+                    <!-- </div>    -->
+      <lightning-combobox
+              name="progress"
+              label="APPLY PROMO"
+              value={value}
+              placeholder="Select a promo code"
+              options={options}
+              onchange={handlePromocode} ></lightning-combobox>
+  
+              Total after discount : Rs.{promocode}
+             
+             <div class="slds-clearfix">
+                <div class="slds-float--left">  
+                   <c-signature-component orderid={orderid} ></c-signature-component>   
+                </div>
+             </div>
+          
+                   <div class="slds-clearfix">
+                        <div class="slds-float--right">                           
+                              <!--   <lightning-button variant="brand-outline" label="Cancel" title="Primary action with lighter look" onclick={CloseClick} class="slds-m-right_x-small"></lightning-button>--> 
+                              <lightning-button variant="brand-outline" label="Clear" title="Primary action with lighter look" onclick={clearClick} class="slds-m-right_x-small"></lightning-button>
+                              <lightning-button variant="brand-outline" label="Finish" title="Primary action with lighter look" onclick={saveClick} class="slds-m-right_x-small"></lightning-button>
+                    </div>  
+                </div>     
+                                                      
+  
+                
+                 
+            </div>
+              </lightning-card>
+  
+  </template>

@@ -1,0 +1,543 @@
+<apex:page title="New Order" showQuickActionVfHeader="false" lightningStylesheets="true" showHeader="false" sidebar="false" standardStylesheets="false" standardController="Visits__c"
+           extensions="CreateOrdersExt" docType="html-5.0" applyHtmlTag="false" applyBodyTag="false">
+    <apex:slds />
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> 
+        <head>
+            <apex:includeScript value="/canvas/sdk/js/publisher.js"/>
+            <apex:stylesheet value="{!URLFOR($Resource.SLDS0121_Order, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+            <apex:includeScript value="{!URLFOR($Resource.DE_SigPad,'/signature_pad-1.5.3/signature_pad.js')}" />
+            <apex:includeScript value="{!URLFOR($Resource.SignatureCapture + '/JavaScript/jQuery1.7.2.js')}" />
+            <apex:includeScript value="{!URLFOR($Resource.DE_SigPad + '/signature_pad-1.5.3/signature_pad.min.js')}" />
+        </head>
+        <body>
+            <div class="slds-scope">
+                <apex:remoteObjects >
+                    <apex:remoteObjectModel name="Product2" fields="Id,Name,ProductCode,Image_URL__c">
+                    </apex:remoteObjectModel>
+                    <apex:remoteObjectModel name="Order" fields="Order_Status__c,AccountId,Name,BillToContactId,Status,EffectiveDate,Pricebook2Id">
+                    </apex:remoteObjectModel>
+                    <apex:remoteObjectModel name="OrderItem" fields="OrderId,UnitPrice,PricebookEntryId,Quantity">
+                    </apex:remoteObjectModel>
+                </apex:remoteObjects>
+                <style>
+                    body {
+                    margin: 0;
+                    }
+                    .quantity {
+                    float: left;
+                    width: 50px;
+                    height: 30px;
+                    margin-right: 10px;
+                    }
+                    .list-group-item {
+                    margin-top: 10px;
+                    border-radius: 4px;
+                    background: #eee;
+                    
+                    }
+                    .order-panel {
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    padding: 10px 15px;
+                    background: #eee;
+                    }
+                    .order-item {
+                    padding: 0;
+                    border:0;
+                    }
+                    @media screen and (device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2) {
+                    html {
+                    position: fixed;
+                    overflow: auto;
+                    width: 100%;
+                    height: 100%;
+                    }
+                    html body {
+                    position: fixed;
+                    overflow-x: scroll;
+                    height: 100%;
+                    width: 100%;
+                    }
+                    }
+                    @media screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) {
+                    html {
+                    position: fixed;
+                    overflow: auto;
+                    width: 100%;
+                    height: 100%;
+                    }
+                    html body {
+                    position: fixed;
+                    overflow-x: scroll;
+                    height: 100%;
+                    width: 100%;
+                    }
+                    }
+                    @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 1) {
+                    html {
+                    position: fixed;
+                    overflow: auto;
+                    width: 100%;
+                    height: 100%;
+                    }
+                    html body {
+                    position: fixed;
+                    overflow-x: scroll;
+                    height: 100%;
+                    width: 100%;
+                    }
+                    }
+                    @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 2) {
+                    html {
+                    position: fixed;
+                    overflow: auto;
+                    width: 100%;
+                    height: 100%;
+                    }
+                    html body {
+                    position: fixed;
+                    overflow-x: scroll;
+                    height: 100%;
+                    width: 100%;
+                    }
+                    }
+                    @media only screen and (max-device-width: 640px), only screen and (max-device-width: 667px), only screen and (max-width: 480px) {
+                    html {
+                    position: fixed;
+                    overflow: auto;
+                    width: 100%;
+                    height: 100%;
+                    }
+                    html body {
+                    position: fixed;
+                    overflow-x: scroll;
+                    height: 100%;
+                    width: 100%;
+                    }
+                    }
+                </style>
+                <div class="demo-only" id="toastPopup" style="height: 4rem;position: absolute;text-align: center;width: 100%;display:none;">
+                    <div class="slds-notify_container slds-is-relative">
+                        <div class="slds-notify slds-notify_toast slds-theme_success" role="alert">
+                            <span class="slds-assistive-text">success</span>
+                            <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#success" />
+                                </svg>
+                            </span>
+                            <div class="slds-notify__content">
+                                <h2 class="slds-text-heading_small ">An order has been created.</h2>
+                            </div>
+                            <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close">
+                                X
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="opScreen1">
+                    <div class="slds">   
+                        <div class="slds-page-header" role="banner" style="padding: 15px;background: #E2E7ED;">
+                            
+                            <div class="slds-grid">
+                                <div class="slds-col slds-has-flexi-truncate">
+                                    <h3 class="slds-text-heading--medium slds-truncate" title="Order Form"
+                                        style="font-size: 18px;">Order Form</h3> </div>
+                                <div class="slds-col slds-no-flex slds-align-bottom">
+                                    <p style="color: #8992A1;" id="header-info">
+                                        No item added
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <apex:form style="background: #F8F9FB;" id="lForm">
+                            <div style="padding:20px 20px 0px 20px;">
+                                <div id="entry-list">
+                                    <div class="slds-form--stacked">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                                                <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default">
+                                                    <use xlink:href="{!URLFOR($Resource.SLDS0121_Order,'/assets/icons/utility-sprite/svg/symbols.svg#search')}"></use>
+                                                </svg>
+                                                <input type="text" class="slds-input search" id="search" placeholder="Enter product name or product code" />
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element">
+                                            <apex:selectList styleClass="slds-select " id="pricebook" style="height:34px;"
+                                                             value="{!selectedPricebook}" multiselect="false" size="1">
+                                                <apex:actionSupport event="onchange" action="{!loadPricebookEntries}" rerender="entryList"
+                                                                    oncomplete="makeOptionList()"/>
+                                                <!--<apex:selectOption itemLabel="Select a pricebook"
+itemValue=""></apex:selectOption>-->
+                                                <apex:selectOptions value="{!PricebookOptions}" />
+                                            </apex:selectList>
+                                        </div>
+                                    </div>
+                                    <p class="slds-text-heading--label slds-truncate" style="margin-top: 20px;margin-bottom:10px;"
+                                       title="Products">Products</p>
+                                    <apex:outputPanel id="entryList">
+                                        
+                                        <ul class="list slds-list--vertical slds-has-cards--space">
+                                            <apex:repeat value="{!pricebookEntries}" var="entry">
+                                                <li class="slds-list__item" style="background: white;">
+                                                    <div class="slds-tile slds-tile--board slds-media">
+                                                        <div class="slds-media__figure">
+                                                            <div class="slds-box" style="padding:10px;">
+                                                                <img src="{!entry.Product2.purl__c}"
+                                                                     width="50"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-grid">
+                                                                <div  class="slds-col slds-size--3-of-4">
+                                                                    <div class="slds-grid slds-grid--align-spread slds-has-flexi-truncate">
+                                                                        <p class="slds-tile__title slds-truncate"><a class="name"><apex:outputField value="{!entry.Product2.Name}"/></a></p>
+                                                                    </div>
+                                                                    <div class="slds-tile__detail slds-text-body--small">
+                                                                        <p class="slds-truncate code">
+                                                                            <apex:outputField value="{!entry.Product2.ProductCode}" />
+                                                                        </p>
+                                                                        <p class="slds-truncate">
+                                                                            <apex:outputField value="{!entry.UnitPrice}" />
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div  class="slds-col slds-size--1-of-4">
+                                                                    <button type="button" class="slds-button slds-button--neutral" style="float:right;width:40px;padding:0;" 
+                                                                            onclick="addToOrder('{!JSINHTMLENCODE(entry.Id)}','{!JSINHTMLENCODE(entry.Product2.Name)}','{!entry.UnitPrice}');">
+                                                                        <img src="{!URLFOR($Resource.SLDS0121_Order,'/assets/icons/utility/add_60.png')}"
+                                                                             width="20"/>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>
+                                    </apex:outputPanel>
+                                    
+                                </div>
+                                
+                                <p class="slds-text-heading--label slds-truncate" style="margin-top: 20px;margin-bottom:10px;"
+                                   title="Products">Your Order</p>
+                                <p class="slds-text-body--small" id="order-placeholder">
+                                    No product added yet...
+                                </p>
+                            </div>
+                            <div  id="order-table" style="display:none;padding:20px 20px 0px 20px;">
+                                <table class="slds-table slds-table--bordered">
+                                    <thead>
+                                        <tr class="slds-text-heading--label">
+                                            <th scope="col">
+                                                <span class="slds-truncate">QTY</span>
+                                            </th>
+                                            <th scope="col">
+                                                <span class="slds-truncate">Product</span>
+                                            </th>
+                                            <th scope="col">
+                                                <span class="slds-truncate">Price</span>
+                                            </th>
+                                            <th scope="col">
+                                                <span class="slds-truncate"></span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="order-list">
+                                        <!-- sample entry
+<tr class="slds-hint-parent">
+<td data-label="QTY">
+<span class="slds-truncate">
+<input type="number" class="slds-input" style="width:50px;"/>
+</span>
+</td>
+<td data-label="Product name">
+<a class="slds-truncate">Product name</a>
+</td>
+<td class="slds-row-action">
+<div style="float:right;">
+<svg aria-hidden="true" class="slds-button__icon slds-button__icon--hint slds-button__icon--medium">
+<use xlink:href="{!URLFOR($Resource.SLDS0121_Order,'/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+</svg>
+<span class="slds-assistive-text">Remove</span>
+</div>
+</td>
+</tr>-->
+                                    </tbody>
+                                </table>
+                                <div style="width:100%;margin-top:20px;padding:20px 20px 0px 20px;">
+                                    <a class="slds-truncate" id="totalPrice" style="font-size:22px;"></a>
+                                </div>
+                                <div style="width:100%;margin-top:20px;padding:20px 20px 0px 20px;">
+                                    <p class="slds-text-heading--label slds-truncate" style="margin-top: 20px;margin-bottom:10px;"
+                                       title="Apply Promo">Apply Promo</p>
+                                    <apex:selectList styleClass="slds-select" onchange="javascript:onChangePromoCode(this.value);" id="promoCode" style="height:34px"
+                                                     value="{!selectedPromoCode}" multiselect="false" size="1">
+                                        <apex:selectOption itemLabel="Select a promo code" itemValue="Select a promo code"></apex:selectOption>
+                                        <apex:selectOption itemLabel="GET 10% off on all products" itemValue="GET 10% off on all products"></apex:selectOption>
+                                        <apex:selectOption itemLabel="Buy 4 GET 1 FREE" itemValue="Buy 4 GET 1 FREE"></apex:selectOption>
+                                    </apex:selectList>
+                                </div>
+                                <div style="width:100%;margin-top:20px;padding:20px 20px 0px 20px;">
+                                    <a class="slds-truncate" id="totalPriceAfterDiscount" style="font-size:22px;"></a>
+                                </div>
+                                <div style="width:100%;margin-top:20px;padding:20px 20px 0px 20px;">
+                                    <p class="slds-text-heading--label slds-truncate" style="margin-top: 20px;margin-bottom:10px;"
+                                       title="Select Distributor">Select Distributor</p>
+                                    <apex:selectList value="{!selectedDistributor}" onchange="javascript:onChangeDistributor(this)" multiselect="false" size="1" style="height:34px">
+                                        <apex:selectOptions value="{!distributors}"/>
+                                    </apex:selectList>
+                                </div> 
+                            </div>
+                            
+                            <div style="padding:20px 20px 0px 20px;">
+                                <p class="slds-text-heading--label slds-truncate" style="margin-top: 20px;margin-bottom:10px;"
+                                   title="Products">Signature</p>
+                                <div class="wrapper" style="background:transparent;">
+                                    <canvas id="signature-pad" class="signature-pad" width="250px" height="100" style="border :1px solid #d8dde6;background:white"></canvas>
+                                </div>
+                            </div>
+                            <div style="padding: 20px; min-height: 80px;">
+                                <div style="float:right;">
+                                    <button type="button" onclick="cancelJS()"  class="slds-button slds-button--neutral ">
+                                        Cancel
+                                    </button>
+                                    <button type="button" onclick="clearOrder()" class="slds-button slds-button--neutral ">
+                                        Clear
+                                    </button>
+                                    <button type="button" onclick="createOrder()" class="slds-button slds-button--brand" id="submit" disabled="disabled">
+                                        Finish
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                            <apex:actionFunction action="{!uploadSignature}" name="uploadSign" oncomplete="javascript:finishCreatingOrder();">
+                                <apex:param assignTo="{!parentId}" value="" name="parentId" id="parentId"/>
+                                <apex:param assignTo="{!content}" value="" name="content" id="content"/>
+                            </apex:actionFunction>
+                        </apex:form>
+                    </div>
+                </div>
+                <apex:includeScript value="{!URLFOR($Resource.FastOrderJs, 'jquery.min.js')}"/>
+                <apex:includeScript value="{!URLFOR($Resource.FastOrderJs, 'list.min.js')}"/>
+                <script src="/support/console/35.0/integration.js" type="text/javascript"></script>
+                <script>
+                    //sforce.console.openPrimaryTab(null, '/' + orderId, true);
+                    var orders = [];
+                var options = {
+                    valueNames: [ 'name', 'code'],
+                    page: 5,
+                };
+                var entryList = new List('entry-list', options);
+                function finishCreatingOrder(){
+                    Sfdc.canvas.publisher.publish({ name: "publisher.close", payload:{ refresh: "true" }});     
+                }
+                function makeOptionList() {
+                    entryList = new List('entry-list', options);
+                }
+                function cancelJS(){
+                    Sfdc.canvas.publisher.publish({ name: "publisher.close", payload:{ refresh: "true" }});
+                }
+                function updateHeaderInfo() {
+                    if (orders.length === 0) {
+                        $('#header-info').html('No item added'); 
+                    } else if (orders.length === 1) {
+                        $('#header-info').html('<a>1 item added</a>'); 
+                    } else {
+                        $('#header-info').html('<a>' + orders.length + ' items added</a>'); 
+                    }
+                }
+                var appliedPromoCodeName;
+                function onChangePromoCode(value){
+                    appliedPromoCodeName = value;
+                    if(value == 'GET 10% off on all products'){
+                        totalOrderPriceWithDiscount = totalOrderPriceWithoutDiscount * 90 / 100
+                        $('#totalPriceAfterDiscount').html('Total after discount : Rs.'+totalOrderPriceWithDiscount);
+                    }else if(value == 'Buy 4 GET 1 FREE'){
+                        totalOrderPriceWithDiscount = totalOrderPriceWithoutDiscount;
+                        $('#totalPriceAfterDiscount').html('Total after discount : Rs.'+totalOrderPriceWithDiscount);    
+                    }else{
+                        $('#totalPriceAfterDiscount').html('');
+                    }
+                }
+                var totalOrderPriceWithoutDiscount = 0;
+                var totalOrderPriceWithDiscount = 0;
+                function addToOrder(entryId, entryName, entryPrice) {
+                    totalOrderPriceWithoutDiscount = parseInt(totalOrderPriceWithoutDiscount) + parseInt (entryPrice);
+                    $('#totalPrice').html('Total : Rs.'+totalOrderPriceWithoutDiscount);
+                    $('#order-table').css('display','block');
+                    $('#order-placeholder').css('display','none');
+                    $('#submit').prop('disabled',false);
+                    var index = findOrderItem(entryId);
+                    if (index > -1) {
+                        ++orders[index].Quantity;
+                        $('#' + entryId).val(orders[index].Quantity);
+                    } else {
+                        orders.push({ Id: entryId, Price: entryPrice, Quantity: 1});
+                        $('#order-list').append('<tr class="slds-hint-parent"><td data-label="QTY">' +
+                                                '<span class="slds-truncate">' + 
+                                                '<input type="number" class="slds-input quantity" style="width:60px;border:none;"' + 
+                                                ' value="1" min="1" onchange="changeQuantity(this, \'' +
+                                                entryId + '\')" id="'+ entryId + '"/> ' +
+                                                '</span></td><td data-label="Product Name"><a class="slds-truncate">' +
+                                                entryName + '</a></td><td data-label="Product Price"><a class="slds-truncate">' +
+                                                'Rs.'+entryPrice + '</a></td><td class="slds-row-action"><div style="float:right;cursor:pointer;" onclick="removeEntry(this, \'' 
+                                                + entryId + '\')">' +
+                                                '<svg aria-hidden="true" class="slds-button__icon slds-button__icon--hint slds-button__icon--medium">' +
+                                                '<use xlink:href="' + 
+                                                "{!URLFOR($Resource.SLDS0121_Order,'/assets/icons/utility-sprite/svg/symbols.svg#close')}" + 
+                                                '"></use>' +
+                                                '</svg></div></td></tr>'
+                                               );
+                    }
+                    updateHeaderInfo();
+                }
+                function changeQuantity(quantity, entryId) {
+                    var index = findOrderItem(entryId);
+                    orders[index].Quantity = $(quantity).val();
+                }
+                function removeEntry(quantity, entryId) {
+                    var index = findOrderItem(entryId);
+                    if (index > -1) {
+                        orders.splice(index, 1);
+                        $(quantity).parent().parent().remove();
+                    }
+                    if (orders.length === 0) {
+                        $('#order-placeholder').css('display','block');
+                        $('#order-table').css('display','none');
+                        $('#submit').prop('disabled',true);
+                    }
+                    updateHeaderInfo();
+                }
+                function findOrderItem(entryId) {
+                    for(var i = 0; i < orders.length; ++i) {
+                        if (orders[i].Id === entryId) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                }
+                function clearOrder() {
+                    orders = [];
+                    $('#order-list').html('');
+                    $('#order-placeholder').css('display','block');
+                    $('#order-table').css('display','none');
+                    $('#submit').prop('disabled',true);
+                    $('#search').val('');
+                    updateHeaderInfo();
+                    var signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
+                        penColor: 'rgb(0, 0, 0)'
+                    });
+                }
+                var orderDetails;
+                var signature;
+                var distributor;
+                function onChangeDistributor(picklist){
+                    distributor = picklist.value;
+                }
+                function createOrder() {
+                    orderDetails = { 
+                        AccountId: '{!Visits__c.Account__c}',
+                        Status: 'Draft',
+                        Order_Status__c : 'New',
+                        EffectiveDate: new Date(),
+                        Pricebook2Id: $('select[id*="pricebook"]').val(),
+                        Distributor__c : distributor
+                    };
+                    saveSignature();
+                    onClickNextPromoCodeScreen();
+                }
+                function saveSignature(orderId){
+                    var canvas = document.getElementById('signature-pad');
+                    var context = canvas.getContext('2d');
+                    var w = canvas.width;
+                    var h = canvas.height;
+                    var data = context.getImageData(0,0,w,h);
+                    var compositeOperation = context.globalCompositeOperation;
+                    context.globalCompositeOperation = "destination-over";
+                    context.fillStyle = '#FFF';
+                    context.fillRect(0,0,w,h);
+                    var d = canvas.toDataURL();
+                    console.log(d);
+                    var split = d.split('base64,',2);
+                    console.log(split[1]);
+                    signature = split[1].toString();   
+                }
+                function createOrderItems(orderId) {
+                    for (var i = 0; i < orders.length; ++i) {
+                        var unitPriceWithDiscount = 0;
+                        if(appliedPromoCodeName == 'GET 10% off on all products')
+                            unitPriceWithDiscount = orders[i].Price * 90 / 100;
+                        else
+                            unitPriceWithDiscount = orders[i].Price;
+                        var details = {
+                            OrderId: orderId,
+                            UnitPrice: unitPriceWithDiscount,
+                            PricebookEntryId: orders[i].Id,
+                            Quantity: orders[i].Quantity,
+                            Promo_Applied__c : appliedPromoCodeName
+                        };
+                        var orderItem = new SObjectModel.OrderItem();
+                        orderItem.create(details,function(err){
+                            if(err){
+                                alert(err.message);
+                            }else{
+                            }
+                        });
+                    }                    
+                }
+                var orderId;
+                function onClickNextPromoCodeScreen(){
+                    var order = new SObjectModel.Order();
+                    order.create(orderDetails, function(err) {
+                        if(err) { 
+                            console.log(err);
+                            alert(err.message);
+                        }
+                        else {
+                            console.log('order created: ' + order.get('Id')); // Id is set when create completes
+                            createOrderItems(order.get('Id'));
+                            javascript:uploadSign(order.get('Id'),signature);
+                            orderId = order.get('Id');
+                        }
+                    });
+                    
+                    
+                    
+                }
+                function openSubtab(subtabUrl)
+                {
+                    // Use the results primary tab id and open a new subtab
+                    var openSubtab = function(result)
+                    {
+                        sforce.console.openSubtab(result.id, subtabUrl, true);    
+                    };
+                    sforce.console.getEnclosingPrimaryTabId(openSubtab);
+                }
+                function showToast(){
+                    document.getElementById('toastPopup').style.display = 'block';
+                    setTimeout(function() { 
+                        document.getElementById('toastPopup').style.display = 'none';
+                    }, 2000);
+                }
+                </script>
+            </div>
+            <script>
+            try {
+                var a=navigator.userAgent; 
+                if((a.indexOf('Salesforce')!=-1)&&(a.indexOf('iPhone')!=-1||a.indexOf('iPad')!=-1)&&(a.indexOf('OS/10')!=-1||a.indexOf('OS 10')!=-1)&&(a.indexOf('Safari')==-1)) { 
+                    var s=document.createElement('style'); 
+                    s.innerHTML="html,html body{overflow: auto;-webkit-overflow-scrolling:touch;}body{position:absolute;left:0;right:0;top:0;bottom:0;}"; 
+                    document.getElementsByTagName('head')[0].appendChild(s);
+                }
+            } catch(e) {
+                console.log(e);
+            }
+            var signaturePad = new SignaturePad(document.getElementById('signature-pad'), {
+                penColor: 'rgb(0, 0, 0)'
+            });
+            </script>
+        </body>
+    </html>
+</apex:page>

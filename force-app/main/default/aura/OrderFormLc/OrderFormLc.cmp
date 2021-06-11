@@ -1,0 +1,6 @@
+<aura:component  implements="force:hasRecordId,force:lightningQuickAction">
+<ltng:require styles="{!$Resource.Cssfile}"/>
+     <aura:attribute name="recordId" type="String" access="public" />
+    
+    <c:loadProducts  recordId="{!v.recordId}"></c:loadProducts>
+</aura:component>

@@ -1,0 +1,69 @@
+<aura:component controller="ShowLocationClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+   <ltng:require styles="{!$Resource.Cssfile}"/>
+               <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="showCustomer" type="boolean"/>
+
+
+    <aura:attribute name="myval" default="5" type="integer"/>
+   
+    
+             <!-- <aura:attribute name="renderMap" type="Boolean" default="false"/> -->
+    <aura:attribute name="latitude" type="String"/>
+    <aura:attribute name="longitude" type="String"/>
+    <aura:attribute name="mapMarkers" type="Object" />
+    <aura:attribute name="center" type="Object" />
+    <aura:attribute name="zoomLevel" type="Integer" default="20" />
+    <aura:attribute name="markersTitle" type="String"  default="Stores"/>
+    <aura:attribute name="showFooter" type="Boolean" default="true" />
+    <aura:attribute name="title" type="String" default="Google Maps"/>
+    <aura:attribute name="companyName" type="string" default="xyzCompany"/>
+     <aura:attribute name="showbutton" type="Boolean" />
+
+     <!--<div style="width:100%;text-align:center;">
+        <lightning:spinner alternativeText="Loading" size="medium" class="spinner"/>
+        <div class="slds-text-heading_medium">Loading....</div>
+    </div>-->
+  <center>   
+
+ <lightning:buttonGroup>
+      
+
+              <lightning:button variant="brand-outline" name="button1"  label="Customers" onclick="{!c.handleChange}" />
+        <lightning:button   name="button2" variant="brand-outline" label="Lead" onclick="{!c.handleOnChange}"/>
+         <lightning:button  name="button3" variant="brand-outline" label="NearBy" onclick="{!c.handleNearBy}"/>
+   
+      </lightning:buttonGroup>
+          
+    </center><br/>
+     
+         <!-- the map component -->
+    <aura:if  isTrue="{!v.showbutton}">
+
+
+         <center>Selected range is {!v.myval} Km </center>
+   <lightning:slider  value="{!v.myval}"   onchange="{!c.sourceFunct}" max="10" default="5" step="1"/>
+    <aura:if isTrue="{!v.mapMarkers.length == 0}" >
+    <ui:message  severity="info" closable="true">
+        <center>No Lead/Customer found in the range.</center>
+	</ui:message>
+       </aura:if>
+       <!-- <aura:set attribute="else">-->
+  <aura:if isTrue="{!v.mapMarkers.length > 0}" >
+        
+                <lightning:map
+                              listView="visible"
+                              mapMarkers="{!v.mapMarkers}"
+                               center="{! v.center }"
+                               zoomLevel="{! v.zoomLevel }"
+                               markersTitle="{! v.markersTitle }"
+                               showFooter="{ !v.showFooter }" 
+                               /> 
+           
+            </aura:if>
+      <!--</aura:if>-->
+      <aura:set attribute="else">
+        <c:ShowNearbyLocationChild/>
+          </aura:set>
+  </aura:if> 
+ 
+</aura:component>

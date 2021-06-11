@@ -1,0 +1,56 @@
+.THIS .tile {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 2px;
+    text-align:center;
+}
+
+.THIS .header_content {
+    font-size: 14px;
+    margin: 10px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+
+.THIS .value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.THIS .text_name {
+    font-size: 15px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.THIS .name_icon {
+    display: inline-block;
+}
+
+.THIS .icon_name {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.THIS .graph {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.THIS .month_name {
+    display: inline-block;
+    width: 80px;
+    text-align: left;
+}
+
+.THIS .months {
+    margin-top: 10px;
+}
+
+.THIS .month_percentage {
+    margin-left: 90px;
+    font-size: 16px;
+    font-weight: bold;
+}

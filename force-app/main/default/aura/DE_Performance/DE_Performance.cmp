@@ -1,0 +1,100 @@
+<aura:component controller="DE_PerformanceCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="performanceList" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="main_component">
+        <div class="header_content">
+            Performance - Last {!v.performanceList.length} Months
+        </div>
+        <div class="body_content">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-large-size_1-of-11">
+                    <div class="tile">
+                        <aura:iteration items="{!v.performanceList}" var="performance">
+                            <div class="months">
+                                <div class="month_name">
+                                    {!performance.MasterLabel}
+                                </div>
+                                <div class="graph">
+                                    <img src="{!$Resource.Progress_Bar  + '/'+ performance.Target__c + '.png'}"></img>
+                                </div>
+                                <div class="month_percentage">
+                                    {!performance.Target__c + '%'}
+                                </div>
+                            </div>
+                        </aura:iteration>
+                        <!--  <div class="months">
+                         <div class="month_name">
+                             May
+                            </div>
+                            <div class="graph">
+                             <img src="{!$Resource.DE_retail_comp_assets + '/1.png'}"></img>
+                            </div>
+                            <div class="month_percentage">
+                             70%
+                            </div>
+                        </div>
+                        <div class="months">
+                         <div class="month_name">
+                             July
+                            </div>
+                            <div class="graph">
+                             <img src="{!$Resource.DE_retail_comp_assets + '/2.png'}"></img>
+                            </div>
+                            <div class="month_percentage">
+                             70%
+                            </div>
+                        </div>
+                        <div class="months">
+                         <div class="month_name">
+                             August
+                            </div>
+                            <div class="graph">
+                             <img src="{!$Resource.DE_retail_comp_assets + '/3.png'}"></img>
+                            </div>
+                            <div class="month_percentage">
+                             57%
+                            </div>
+                        </div>
+                        <div class="months">
+                         <div class="month_name">
+                             September
+                            </div>
+                            <div class="graph">
+                             <img src="{!$Resource.DE_retail_comp_assets + '/4.png'}"></img>
+                            </div>
+                            <div class="month_percentage">
+                             43%
+                            </div>
+                        </div>
+                        <div class="months">
+                         <div class="month_name">
+                             October
+                            </div>
+                            <div class="graph">
+                             <img src="{!$Resource.DE_retail_comp_assets + '/5.png'}"></img>
+                            </div>
+                            <div class="month_percentage">
+                             32%
+                            </div>
+                        </div>
+                        <div class="months">
+                         <div class="month_name">
+                             November
+                            </div>
+                            <div class="graph">
+                             <img src="{!$Resource.DE_retail_comp_assets + '/6.png'}"></img>
+                            </div>
+                            <div class="month_percentage">
+                             10%
+                            </div>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>	
+    <aura:iteration items="{!v.performanceList}" var="performance">
+        
+    </aura:iteration>
+</aura:component>

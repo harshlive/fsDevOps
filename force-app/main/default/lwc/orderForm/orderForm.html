@@ -1,0 +1,56 @@
+<template>
+    <lightning-card title="Order Form">
+    
+      
+            <div class="slds-m-around_medium">
+     
+                    <div class="slds-m-bottom_small">
+                        <lightning-input type="text"
+                           value={sVal}
+                           
+                           placeholder="Enter Product Name Or Product Code"
+                           onchange={updateSeachKey}
+                           ></lightning-input>
+                     </div>
+                     
+                     <lightning-button label="Search"
+                        onclick={handleSearch}
+                        variant="brand"></lightning-button>
+                        <div class="demo-only" style="width:30rem">
+                                <article class="slds-tile">
+                                  <h3 class="slds-tile__title slds-truncate" title="Salesforce UX">
+                                    <a href="javascript:void(0);">Salesforce UX</a>
+                                  </h3>
+                                  <div class="slds-tile__detail">
+                                        <dl class="slds-list_horizontal slds-wrap">
+                                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="First Label">Name</dt>
+                                                <dd class="slds-item_detail slds-truncate" title="Description for first label">Name</dd>
+                                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Second Label">ProductCode</dt>
+                                                <dd class="slds-item_detail slds-truncate" title="Description for second label">ProductCode</dd>
+                                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Second Label">UnitPrice</dt>
+                                                <dd class="slds-item_detail slds-truncate" title="Description for second label">UnitPrice</dd>
+                                              
+                                              </dl>
+                                 
+                           <!--iterate all contact records using for-each iteration -->    
+                           <template for:each={products} for:item="PricebookEntry">
+                                <tr class="slds-hint-parent" key={PricebookEntry.Id}>
+                                   <td>
+                                      <div class="slds-truncate">{PricebookEntry.Product2.Name}</div>
+                                   </td>
+                                   <td>
+                                      <div class="slds-truncate">{PricebookEntry.Product2.ProductCode}</div>
+                                   </td>
+                                   <td>
+                                          <div class="slds-truncate">{PricebookEntry.UnitPrice}</div>
+                                       </td>
+                                   
+                                      
+                                </tr>
+                             </template>
+                            </div>
+                        </article>
+                      </div>
+                  </div>        
+    </lightning-card>
+    </template>

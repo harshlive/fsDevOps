@@ -1,0 +1,28 @@
+<aura:component controller="checkInClass" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >	
+    <aura:attribute name="fields" type="Object"/>
+    <aura:attribute name="record" type="Object"/>
+    <force:recordData aura:id="RecordCreator"
+                      layoutType="FULL"
+                      targetRecord="{!v.record}"     
+                      fields="Checked_In__c"
+                      targetFields="{!v.fields}"
+                      recordId="{!v.recordId}"
+                      recordUpdated="{!c.doInit}" 
+                      
+                      />
+    
+    <!--  <aura:handler name="render" value="{!this}" action="{!c.doInit}"/>-->
+    <aura:attribute name="checkFieldval" type="Boolean" default="false"/>
+    <aura:if  isTrue="{!v.checkFieldval}">
+        <div style="width:100%;text-align:center;">
+            <lightning:spinner alternativeText="Loading" size="medium" class="spinner"/>
+            <div class="slds-text-heading_medium">Checking in....</div>
+        </div>
+    
+    <aura:set attribute="else">
+        <ui:message  severity="info" closable="true">
+            <center>Check In has already been done.</center>
+        </ui:message>
+    </aura:set>
+        </aura:if>
+</aura:component>

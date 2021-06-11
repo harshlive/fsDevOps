@@ -1,0 +1,7 @@
+<design:component>
+    <design:attribute name="calendarColor" label="Calendar Background Color" description="Pick the background color for your calendar"/>
+    <design:attribute name="theme" label="Event Theme" description="Some premade themes from the lighning design system, more info available here: https://www.lightningdesignsystem.com/components/utilities/themes/#flavor-color" datasource="slds-theme--default,slds-theme--shade,slds-theme--inverse,slds-theme--alt-inverse,slds-theme--info,slds-theme--success,slds-theme--warning,slds-theme--error,slds-theme--offline,None"/>
+    <design:attribute name="textColor" label="Event Text Color" description="Pick the text color for your calendar events"/>
+    <design:attribute name="eventBackgroundColor" label="Event Background Color" description="If you want a custom background, make sure you set the Event Theme to 'None' above"/>
+    <design:attribute name="eventBorderColor" label="Event Border Color" description="If you want a custom border, make sure you set the Event Theme to 'None' above"/>
+</design:component>

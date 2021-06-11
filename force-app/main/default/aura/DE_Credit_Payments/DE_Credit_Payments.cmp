@@ -1,0 +1,83 @@
+<aura:component controller="DE_Credit_Payments_Cntrl" implements="force:hasRecordId,force:lightningQuickAction" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="credInfo" type="List" default="[]"/>
+    <aura:attribute name="visitInfo" type="Visits__c"/>
+    <div class="main_component">
+        <div class="Account_information">
+            <div class="account_name">
+                {!v.visitInfo.Account__r.Name}
+            </div>
+            <div class="account_type">
+                {!v.visitInfo.Account__r.ShippingStreet+', '+v.visitInfo.Account__r.ShippingCity}
+            </div>
+        </div>
+        <div class="header_content">
+            Credits &amp; Payments
+        </div>
+        <div class="body_content">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                    <div class="tile">
+                        <div class="text_name">
+                            <div class="name_icon">
+                                <img src="{!$Resource.DE_retail_comp_assets + '/credit_limit.png'}"></img>
+                            </div>
+                            <div class="icon_name">
+                                Credit Limit
+                            </div>
+                        </div>
+                        <div class="value">
+                            <ui:outputCurrency value="{!v.credInfo[0].Credit_Limit__c}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                    <div class="tile">
+                        <div class="text_name">
+                            <div class="name_icon">
+                                <img src="{!$Resource.DE_retail_comp_assets + '/credit_utilization.png'}"></img>
+                            </div>
+                            <div class="icon_name">
+                                Credit Utilization
+                            </div>
+                        </div>
+                        <div class="value">
+                            <img src="{!$Resource.Progress_Bar  + '/'+ v.credInfo[0].Credit_Utilization__c + '.png'}"></img>
+                            <!--img src="{!$Resource.DE_retail_comp_assets + '/graph.png'}" width="50"></img-->
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                    <div class="tile">
+                        <div class="text_name">
+                            <div class="name_icon">
+                                <img src="{!$Resource.DE_retail_comp_assets + '/payment_due.png'}"></img>
+                            </div>
+                            <div class="icon_name">
+                                Payment Due
+                            </div>
+                        </div>
+                        <div class="value">
+                            <ui:outputCurrency value="{!v.credInfo[0].Payment_Due__c}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                    <div class="tile">
+                        <div class="text_name">
+                            <div class="name_icon">
+                                <img src="{!$Resource.DE_retail_comp_assets + '/due_date.png'}"></img>
+                            </div>
+                            <div class="icon_name">
+                                Due Date
+                            </div>
+                        </div>
+                        <div class="value">
+                            <ui:outputDate value="{!v.credInfo[0].Due_Date__c}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>	
+</aura:component>

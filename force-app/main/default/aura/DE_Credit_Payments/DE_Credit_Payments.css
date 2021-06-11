@@ -1,0 +1,47 @@
+.THIS .tile {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 2px;
+}
+
+.THIS .header_content {
+    font-size: 14px;
+    margin: 10px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+
+.THIS .value {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.THIS .text_name {
+    font-size: 15px;
+    margin-bottom: 10px;
+    border-bottom:1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.THIS .name_icon {
+    display: inline-block;
+}
+
+.THIS .icon_name {
+    display: inline-block;
+    margin-left: 10px;
+}
+.THIS .Account_information {
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+    background: #0a4071;
+    color: white;
+}
+.THIS .account_name {
+    font-size: 17px;
+    font-weight: bold;
+}
